@@ -1,0 +1,49 @@
+checker: flymake-collection-kube-linter
+tests:
+  - name: no-lints
+    file: ""
+    lints: []
+  - name: example-file
+    file: |-
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: security-context-demo
+      spec:
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 3000
+          fsGroup: 2000
+        volumes:
+        - name: sec-ctx-vol
+          emptyDir: {}
+        containers:
+        - name: sec-ctx-demo
+          image: busybox
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+          command: [ "sh", "-c", "sleep 1h" ]
+          volumeMounts:
+          - name: sec-ctx-vol
+            mountPath: /data/demo
+          securityContext:
+            allowPrivilegeEscalation: false
+    lints:
+      - point: [1, 0]
+        level: error
+        message: |-
+          [latest-tag] The container "sec-ctx-demo" is using an invalid container image, "busybox". Please use images that are not blocked by the `BlockList` criteria : [".*:(latest)$" "^[^:]*$" "(.*/[^:]+)$"] (kube-linter)
+      - point: [1, 0]
+        level: error
+        message: |-
+          [no-read-only-root-fs] container "sec-ctx-demo" does not have a read-only root file system (kube-linter)
+      - point: [1, 0]
+        level: error
+        message: |-
+          [unset-cpu-requirements] container "sec-ctx-demo" has cpu limit 0 (kube-linter)
+      - point: [1, 0]
+        level: error
+        message: |-
+          [unset-memory-requirements] container "sec-ctx-demo" has memory limit 0 (kube-linter)

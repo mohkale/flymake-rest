@@ -82,7 +82,8 @@
      (flymake-collection-shellcheck
       (sh-shellcheck-flymake :disabled t)))
     ((yaml-mode yaml-ts-mode) .
-     flymake-collection-yamllint)
+     (flymake-collection-yamllint
+      (flymake-collection-kube-linter :disabled t)))
     ((web-mode html-ts-mode) .
      (flymake-collection-html-tidy))
     (org-mode
