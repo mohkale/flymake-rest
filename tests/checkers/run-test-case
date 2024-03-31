@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3
 """Test case runner for flymake-collection.
 """
 import json
@@ -74,8 +74,8 @@ def run_flymake(src: pathlib.Path, checker: str) -> Optional[List[TestLint]]:
 (require 'flymake)
 (require 'json)
 
-(add-to-list 'load-path "/src/src")
-(add-to-list 'load-path "/src/src/checkers")
+(add-to-list 'load-path "/workspaces/flymake-collection/src")
+(add-to-list 'load-path "/workspaces/flymake-collection/src/checkers")
 (require (intern "{checker}") "{checker}.el")
 
 (setq src (find-file-literally "{src}")

@@ -19,4 +19,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run test suite
-        run: make test EMACS_BRANCH="${{ matrix.emacs_branch }}"
+        run: make docker EMACS_BRANCH="${{ matrix.emacs_branch }}" DOCKER_FLAGS='' DOCKER_COMMAND='make test'

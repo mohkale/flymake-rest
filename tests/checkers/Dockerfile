@@ -29,16 +29,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* $(pwd)/*
 
-WORKDIR /build
-COPY installers /build/installers
-RUN apt-get update && \
-    apt-get install -y \
-      parallel python3.8 python3-pip moreutils git && \
-    python3.8 -m pip install pyyaml && \
-    find installers/ -type f -iname '*.bash' -exec {} \; && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # Install the latest available version of flymake for these tests.
 RUN cd "$(mktemp -d)" && \
     git clone https://github.com/emacs-straight/flymake.git . && \
@@ -46,4 +36,22 @@ RUN cd "$(mktemp -d)" && \
     cp flymake.el /etc/emacs/flymake.el && \
     rm -rf "$(pwd)"
 
-WORKDIR /src
+# Add a user for the dev-container workflow and dev dependencies.
+ARG USERNAME=devcontainer
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+USER root
+
+# Run installers for all available linters
+WORKDIR /build
+ARG LINTERS="*"
+COPY installers /build/installers
+RUN apt-get update && \
+    apt-get install -y \
+      parallel python3.8 python3-pip moreutils git && \
+    python3.8 -m pip install pyyaml && \
+    find installers/ -type f -iname "$LINTERS.bash" -exec {} \; && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*

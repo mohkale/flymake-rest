@@ -1,0 +1,13 @@
+{
+	"name": "Flymake collection",
+	"build": {
+		"dockerfile": "../tests/checkers/Dockerfile"
+	},
+    "remoteUser": "devcontainer",
+    "updateRemoteUserUID": true,
+    "customizations": {
+        "emacs": {
+            "inline-dir-locals": "((nil . ((eval . (add-to-list 'tramp-remote-path 'tramp-own-remote-path)))))"
+        }
+    }
+}
