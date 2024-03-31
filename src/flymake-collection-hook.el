@@ -116,22 +116,6 @@
   :type 'boolean
   :group 'flymake-collection)
 
-(defun flymake-collection-hook--configured-checkers-for-mode (mode)
-  "Return all checkers configured for MODE in `flymake-collection-hook-config'."
-  (cl-dolist (it flymake-collection-hook-config)
-    (let ((it-mode (car it))
-          (it-conf (cdr it)))
-      (cond ((symbolp it-mode)
-             (when (equal it-mode mode)
-               (cl-return it-conf)))
-            ((consp it)
-             (when (member mode it-mode)
-               (cl-return it-conf)))
-            (t
-             (user-error
-              "Unknown hook predicate=%s in `flymake-collection-hook-config'"
-              it))))))
-
 (defun flymake-collection-hook--expand-configs (checkers)
   "Resolve all the checkers in CHECKERS.
 Resolving converts each checker in CHECKERS, which should be the value-type in
@@ -154,18 +138,18 @@ that are not true."
                                       :depth ,depth
                                       :disabled ,(or disabled
                                                      (and predicate
-                                                          (funcall predicate))))))
+                                                          (not (funcall predicate)))))))
        and if predicated-result
          collect predicated-result))
 
-(defun flymake-collection-hook--checkers ()
-  "Fetch config entries passing the predicate for the current buffer."
+(defun flymake-collection-hook--checkers (mode)
+  "Fetch config entries associated with MODE."
   (let (checkers
-        (modes (list major-mode)))
+        (modes (list mode)))
     (when flymake-collection-hook-inherit-config
-      (let ((mode major-mode))
-        (while (setq mode (get mode 'derived-mode-parent))
-          (push mode modes))))
+      (let ((mode-parent major-mode))
+        (while (setq mode-parent (get mode-parent 'derived-mode-parent))
+          (push mode-parent modes))))
 
     (dolist (it flymake-collection-hook-config)
       (when
@@ -174,25 +158,15 @@ that are not true."
             ((pred consp) (seq-intersection modes (car it)))
             (_
              (user-error "Unknown hook predicate=%s in `flymake-collection-hook-config'" it)))
-        (setq checkers (append checkers (cdr it)))))))
+        (setq checkers (append checkers (cdr it)))))
+
+    checkers))
 
 (defun flymake-collection-hook--checker-configs (mode)
   "Fetch the list of diagnostic functions for MODE as plists.
 The plists contains keys for :checker, :depth, :disabled."
-  (let (checkers
-        (modes (list mode)))
-    ;; Consider all the parent modes as well.
-    (when flymake-collection-hook-inherit-config
-      (while (setq mode (get mode 'derived-mode-parent))
-        (push mode modes)))
-    ;; For each mode populate the checkers alist with (checker . depth).
-    (dolist (mode modes)
-      (setq checkers (append
-                      checkers
-                      (flymake-collection-hook--expand-configs
-                       (flymake-collection-hook--configured-checkers-for-mode
-                        mode)))))
-    checkers))
+  (flymake-collection-hook--expand-configs
+   (flymake-collection-hook--checkers mode)))
 
 
 

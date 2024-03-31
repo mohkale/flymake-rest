@@ -30,6 +30,8 @@
 (require 'flymake)
 (require 'flymake-collection-hook)
 
+(eval-when-compile (require 'subr-x))
+
 (defun flymake-collection-change-checker--cands (all-modes)
   "Candidates for `flymake-collection-change-checker'.
 With ALL-MODES fetch all registered flymake checkers even when
@@ -39,7 +41,8 @@ they aren't associated with the current mode."
      (cl-loop for (mode . checkers) in
               (if all-modes
                   flymake-collection-hook-config
-                (list (assoc major-mode flymake-collection-hook-config)))
+                (list (cons major-mode (flymake-collection-hook--checkers major-mode))))
+              do (setq mode (ensure-list mode))
               append
               (cl-loop for it in checkers
                        with checker = nil
@@ -60,7 +63,7 @@ See `flymake-collection-change-checker--cands' for a description of ALL-MODES."
          (group-function (lambda (cand transform)
                            (if transform
                                cand
-                             (symbol-name (cadr (assoc cand cands))))))
+                             (string-join (mapcar #'symbol-name (cadr (assoc cand cands))) "/"))))
          (affix-function (lambda (cands-keys)
                            (cl-loop
                             for cand in cands-keys collect
