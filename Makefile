@@ -1,40 +1,52 @@
-SRC   := src/*.el src/checkers/*.el
+SRC_DIR = src
+BIN_DIR = bin
+
+SRC      := $(wildcard $(SRC_DIR)/*.el $(SRC_DIR)/checkers/*.el)
+ELC      := $(patsubst $(SRC_DIR)/%.el,$(BIN_DIR)/%.elc,$(SRC))
+ELCHKDOC := $(patsubst $(SRC_DIR)/%.el,$(BIN_DIR)/%.checkdoc,$(SRC))
+
 EMACS ?= emacs --eval '(add-to-list (quote load-path) (concat default-directory "src/"))'
+
+$(V).SILENT:
 
 .PHONY: lint
 lint: compile checkdoc
 
 .PHONY: checkdoc
-checkdoc: ## Check for missing or poorly formatted docstrings
-	@for file in $(SRC); do \
-	    echo "[checkdoc] $$file" ;\
-	    $(EMACS) -Q --batch \
-	        --eval "(or (fboundp 'checkdoc-file) (kill-emacs))" \
-	        --eval "(setq sentence-end-double-space nil)" \
-	        --eval "(checkdoc-file \"$$file\")" 2>&1 \
-	        | grep . && exit 1 || true ;\
-	done
+checkdoc: $(ELCHKDOC)
+
+$(BIN_DIR)/%.checkdoc: $(SRC_DIR)/%.el
+	mkdir -p "$$(dirname "$@")"
+	@echo "[checkdoc] $^"
+	$(EMACS) -Q --batch \
+	    --eval "(or (fboundp 'checkdoc-file) (kill-emacs 1))" \
+	    --eval "(setq sentence-end-double-space nil)" \
+	    --eval "(checkdoc-file \"$^\")" 2>&1 \
+		| tee "$@" \
+	    | grep . && exit 1 || true
+
 
 .PHONY: compile
-compile: ## Check for byte-compiler errors
-	@for file in $(SRC); do \
-	    echo "[compile] $$file" ;\
-	    rm -f "$${file}c" ;\
-	    $(EMACS) -Q --batch -L . -f batch-byte-compile $$file 2>&1 \
-	        | grep -v "^Wrote" \
-	        | grep . && exit 1 || true ;\
-	done
+compile: $(ELC)
+
+$(BIN_DIR)/%.elc: $(SRC_DIR)/%.el
+	mkdir -p "$$(dirname "$@")"
+	@echo "[compile] $^"
+	$(EMACS) -Q --batch -L . -f batch-byte-compile "$^" 2>&1 \
+		| grep -v -e "^Wrote" -e "^Loading" \
+		| grep . && exit 1 || true ;\
+	mv -f "$^c" "$@"
 
 .PHONY: docker-build
 docker-build: ## Create a build image for running tests
 	@echo "[docker] Building docker image"
-	@docker build  -t flymake-collection-test ./tests/checkers
+	docker build  -t flymake-collection-test ./tests/checkers
 
 DOCKER_COMMAND := bash
 DOCKER_FLAGS := -it
 .PHONY: docker
 docker: docker-build ## Run a command in the built docker-image.
-	@docker run \
+	docker run \
 	  --rm \
 	  $(DOCKER_FLAGS) \
       --workdir /workspaces/flymake-collection \
@@ -42,12 +54,17 @@ docker: docker-build ## Run a command in the built docker-image.
 	  flymake-collection-test \
 	  $(DOCKER_COMMAND)
 
+LINTERS := *
 .PHONY: test
 test: ## Run all defined test cases.
 	@echo "[test] Running all test cases"
-	@find ./tests/checkers/test-cases/ -iname '*.yml' | parallel -I{} chronic ./tests/checkers/run-test-case {}
+	find ./tests/checkers/test-cases/ -iname '$(LINTERS).yml' | parallel -I{} chronic ./tests/checkers/run-test-case {}
 
 .PHONY: clean
 clean: ## Remove build artifacts
-	@echo "[clean]" $(subst .el,.elc,$(SRC))
-	@rm -f $(subst .el,.elc,$(SRC))
+	for file in $(ELC) $(ELCHKDOC); do \
+	    if [ -e "$$file" ]; then \
+			echo "[clean] $$file"; \
+	        rm -f "$$file"; \
+	    fi; \
+	done
