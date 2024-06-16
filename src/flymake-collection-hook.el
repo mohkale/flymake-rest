@@ -49,6 +49,7 @@
       (flymake-mypy :disabled t)
       (flymake-collection-bandit :disabled t)
       (flymake-collection-codespell :disabled t)
+      (flymake-collection-pyre :disabled t)
       (flymake-collection-pylint :disabled t)
       (flymake-collection-flake8 :disabled t)
       (flymake-collection-ruff :disabled t)))
