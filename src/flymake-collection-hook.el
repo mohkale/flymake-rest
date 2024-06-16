@@ -53,6 +53,7 @@
       (flymake-collection-flake8 :disabled t)
       (flymake-collection-ruff :disabled t)))
     (awk-mode . (flymake-collection-awk-gawk))
+    ((asm-mode nasm-mode) . (flymake-collection-nasm))
     ((c-mode c-ts-mode) .
      (flymake-collection-clang
       (flymake-collection-codespell :disabled t)
