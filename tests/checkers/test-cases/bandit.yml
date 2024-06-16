@@ -1,0 +1,33 @@
+---
+checker: flymake-collection-bandit
+tests:
+  - name: no-lints
+    file: |
+      """A test case with no output from bandit."""
+
+      print("hello world")
+    lints: []
+  - name: hardcoded-password
+    file: |
+      """A test case with an output from bandit"""
+
+      class SomeClass:
+          password = "class_password"
+
+    lints:
+      - point: [4, 4]
+        level: note
+        message: "B105  Possible hardcoded password: 'class_password' (bandit)"
+  - name: ciphers
+    file: |
+      """A test case with an output from codespell"""
+
+      from cryptography.hazmat.primitives.ciphers.modes import ECB
+
+      # Insecure mode
+      mode = ECB(iv)
+
+    lints:
+      - point: [6, 0]
+        level: warning
+        message: "B305  Use of insecure cipher mode cryptography.hazmat.primitives.ciphers.modes.ECB. (bandit)"
