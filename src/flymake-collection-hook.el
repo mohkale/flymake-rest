@@ -58,10 +58,12 @@
     ((c-mode c-ts-mode) .
      (flymake-collection-clang
       (flymake-collection-codespell :disabled t)
+      (flymake-collection-clang-tidy :disabled t)
       (flymake-collection-gcc :disabled t)))
     ((c++-mode c++-ts-mode) .
      (flymake-collection-clang
       (flymake-collection-codespell :disabled t)
+      (flymake-collection-clang-tidy :disabled t)
       (flymake-collection-gcc :disabled t)))
     (haskell-mode . (flymake-collection-hlint))
     ((janet-mode janet-ts-mode) . (flymake-collection-janet))
