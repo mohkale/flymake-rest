@@ -39,29 +39,35 @@
 
 ;;;###autoload
 (defcustom flymake-collection-hook-config
-  '((elisp-mode .
+  '((emacs-lisp-mode .
      (elisp-flymake-byte-compile
-      elisp-flymake-checkdoc))
+      elisp-flymake-checkdoc
+      (flymake-collection-codespell :disabled t)))
     ((python-mode python-ts-mode) .
      (flymake-collection-pycodestyle
       (python-flymake :disabled t)
       (flymake-mypy :disabled t)
+      (flymake-collection-codespell :disabled t)
       (flymake-collection-pylint :disabled t)
       (flymake-collection-flake8 :disabled t)
       (flymake-collection-ruff :disabled t)))
     (awk-mode . (flymake-collection-awk-gawk))
     ((c-mode c-ts-mode) .
      (flymake-collection-clang
+      (flymake-collection-codespell :disabled t)
       (flymake-collection-gcc :disabled t)))
     ((c++-mode c++-ts-mode) .
      (flymake-collection-clang
+      (flymake-collection-codespell :disabled t)
       (flymake-collection-gcc :disabled t)))
     (haskell-mode . (flymake-collection-hlint))
     ((janet-mode janet-ts-mode) . (flymake-collection-janet))
     ((js-mode js2-mode typescript-mode typescript-ts-mode) .
-     (flymake-collection-eslint))
+     (flymake-collection-eslint
+      (flymake-collection-codespell :disabled t)))
     ((json-mode json-ts-mode) .
      (flymake-collection-jq
+      (flymake-collection-codespell :disabled t)
       (flymake-collection-jsonlint :disabled t)))
     (less-mode flymake-collection-less)
     (markdown-mode
@@ -77,13 +83,16 @@
      flymake-collection-sql-lint
      (flymake-collection-sqlint :disabled t))
     ((ruby-mode ruby-ts-mode) .
-     (flymake-collection-rubocop))
+     (flymake-collection-rubocop
+      (flymake-collection-codespell :disabled t)))
     ;; (hledger-mode flymake-collection-hledger)
     ((sh-mode bash-ts-mode) .
      (flymake-collection-shellcheck
+      (flymake-collection-codespell :disabled t)
       (sh-shellcheck-flymake :disabled t)))
     ((yaml-mode yaml-ts-mode) .
      (flymake-collection-yamllint
+      (flymake-collection-codespell :disabled t)
       (flymake-collection-kube-linter :disabled t)))
     ((web-mode html-ts-mode) .
      (flymake-collection-html-tidy))
