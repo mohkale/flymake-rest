@@ -81,6 +81,14 @@ like output from OUTPUT into a list and then returns it."
         (forward-line)))
     objects))
 
+(defun flymake-collection-npm-bin (command)
+  "Search for COMMAND and return absolute file name in node_modules bin path."
+  (when-let* (((executable-find "npm"))
+              (path (concat (string-trim (shell-command-to-string "npm root")) "/.bin"))
+              ((file-exists-p path))
+              (exec-path (list path)))
+    (executable-find command)))
+
 (define-obsolete-face-alias 'flymake-rest-checker 'flymake-collection-checker "2.0.0")
 (define-obsolete-face-alias 'flymake-rest-diag-id 'flymake-collection-diag-id "2.0.0")
 (define-obsolete-function-alias 'flymake-rest-parse-json 'flymake-collection-parse-json "2.0.0")
