@@ -22,7 +22,7 @@ tests:
     lints:
       - point: [4, 4]
         level: error
-        message: "symbol `message' not defined (nasm)"
+        message: "symbol `message' undefined (nasm)" # TODO: "undefined" becomes "not defined" in newer NASM version
       - point: [8, 4]
         level: error
-        message: "symbol `raxx' not defined (nasm)"
+        message: "symbol `raxx' undefined (nasm)" # TODO: "undefined" becomes "not defined" in newer NASM version
