@@ -1,0 +1,14 @@
+---
+checker: flymake-collection-janet
+tests:
+  - name: no-lints
+    file: |
+      (print "hello world")
+    lints: []
+  - name: compile-error
+    file: |
+      (pri "hello world")
+    lints:
+      - point: [1, 0]
+        level: error
+        message: compile error: unknown symbol pri
