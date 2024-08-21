@@ -11,4 +11,13 @@ tests:
     lints:
       - point: [1, 0]
         level: error
-        message: compile error: unknown symbol pri
+        message: |-
+          compile error: unknown symbol pri
+  - name: parse-error
+    file: |
+      (print "hello world"
+    lints:
+      - point: [1, 0]
+        level: error
+        message: |-
+          parse error: unexpected end of source, ( opened at line 1, column 1
