@@ -1,0 +1,18 @@
+---
+checker: flymake-collection-bashate
+tests:
+  - name: no-lints
+    file: |
+      # A test case with no output from bashate.
+      echo "hello world"
+    lints: []
+  - name: test
+    file: |
+      # A test case with a warning lint.
+      if true; then
+                echo "Hello world"
+      fi
+    lints:
+      - point: [3, 1]
+        level: error
+        message: "test-lint.sh:3:1: E003 Indent not multiple of 4"

@@ -79,8 +79,9 @@
      (flymake-collection-rubocop))
     ;; (hledger-mode flymake-collection-hledger)
     ((sh-mode bash-ts-mode) .
-     (flymake-collection-shellcheck
-      (sh-shellcheck-flymake :disabled t)))
+     (flymake-collection-bashate
+      (flymake-collection-shellcheck
+      (sh-shellcheck-flymake :disabled t))))
     ((yaml-mode yaml-ts-mode) .
      (flymake-collection-yamllint
       (flymake-collection-kube-linter :disabled t)))
