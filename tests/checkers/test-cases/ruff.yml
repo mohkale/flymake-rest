@@ -25,4 +25,7 @@ tests:
     lints:
       - point: [1, 11]
         level: warning
-        message: "E999 SyntaxError: Simple statements must be separated by newlines or semicolons (ruff)"
+        message: "SyntaxError: Simple statements must be separated by newlines or semicolons (ruff)"
+      - point: [1, 18]
+        level: warning
+        message: "SyntaxError: Simple statements must be separated by newlines or semicolons (ruff)"
