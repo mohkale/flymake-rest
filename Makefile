@@ -5,7 +5,12 @@ SRC      := $(wildcard $(SRC_DIR)/*.el $(SRC_DIR)/checkers/*.el)
 ELC      := $(patsubst $(SRC_DIR)/%.el,$(BIN_DIR)/%.elc,$(SRC))
 ELCHKDOC := $(patsubst $(SRC_DIR)/%.el,$(BIN_DIR)/%.checkdoc,$(SRC))
 
-EMACS ?= emacs --eval '(add-to-list (quote load-path) (concat default-directory "src/"))'
+# Obsolete warnings suppressed for `rx-constituents'. The replacement
+# does not let you define optional arguments for properties which makes
+# it incompatbile with the regexp format we've used until now.
+EMACS ?= emacs \
+    --eval '(add-to-list (quote load-path) (concat default-directory "src/"))' \
+	--eval '(byte-compile-disable-warning (quote obsolete))'
 
 $(V).SILENT:
 
@@ -40,7 +45,7 @@ $(BIN_DIR)/%.elc: $(SRC_DIR)/%.el
 .PHONY: docker-build
 docker-build: ## Create a build image for running tests
 	@echo "[docker] Building docker image"
-	docker build  -t flymake-collection-test ./tests/checkers
+	docker build -t flymake-collection-test ./tests/checkers
 
 DOCKER_COMMAND := bash
 DOCKER_FLAGS := -it
