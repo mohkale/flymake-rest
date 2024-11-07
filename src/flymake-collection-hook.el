@@ -59,7 +59,8 @@
     (haskell-mode . (flymake-collection-hlint))
     ((janet-mode janet-ts-mode) . (flymake-collection-janet))
     ((js-mode js2-mode typescript-mode typescript-ts-mode) .
-     (flymake-collection-eslint))
+     (flymake-collection-eslint
+      (flymake-collection-oxlint :disabled t)))
     ((json-mode json-ts-mode) .
      (flymake-collection-jq
       (flymake-collection-jsonlint :disabled t)))
