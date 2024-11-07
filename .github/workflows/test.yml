@@ -6,6 +6,7 @@ on:
     branches: release
   pull_request:
     branches: release
+    types: [opened, reopened, edited]
   schedule:
     - cron: "0 13 * * *"
 
