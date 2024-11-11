@@ -47,7 +47,7 @@
 
 ;;; Helpers
 
-(defun flymake-clang-tidy-find-project-root (_checker)
+(defun flymake-collection-clang-tidy-find-project-root (_checker)
   "Find the project root for CHECKER.
 This uses `project', `projectile', `vc' or the \".clang-tidy\" file"
   (or
@@ -62,8 +62,8 @@ This uses `project', `projectile', `vc' or the \".clang-tidy\" file"
 
 (defun flymake-collection-clang-tidy-get-config ()
   "Find and read .clang-tidy."
-  (when-let* ((config-dir (locate-dominating-file (or buffer-file-name default-directory) ".clang-tidy"))
-              (config-file (expand-file-name ".clang-tidy" config-dir)))
+  (when-let ((config-dir (locate-dominating-file (or buffer-file-name default-directory) ".clang-tidy"))
+             (config-file (expand-file-name ".clang-tidy" config-dir)))
     (with-temp-buffer
       (insert-file-contents config-file)
       (buffer-string))))
