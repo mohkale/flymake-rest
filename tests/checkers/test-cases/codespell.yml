@@ -1,0 +1,18 @@
+---
+checker: flymake-collection-codespell
+tests:
+  - name: no-lints
+    file: |
+      """A test case with no output from codespell."""
+
+      print("hello world")
+    lints: []
+  - name: misspelling
+    file: |
+      """A test case with an output from codespell"""
+
+      vairable = "Hello"
+    lints:
+      - point: [3, 0]
+        level: warning
+        message: vairable ==> variable (codespell)
