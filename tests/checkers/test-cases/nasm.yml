@@ -1,0 +1,28 @@
+---
+checker: flymake-collection-nasm
+tests:
+  - name: no-lints
+    file: |
+      _start:
+          mov     rax, 1
+          mov     rdi, 1
+    lints: []
+  - name: errors
+    file: |
+      _start:
+          mov     rax, 1
+          mov     rdi, 1
+          mov     rsi, message
+          mov     rdx, 14
+
+          syscall
+          mov     raxx, 60
+          xor     rdi, rdi
+          syscall
+    lints:
+      - point: [4, 4]
+        level: error
+        message: "symbol `message' undefined (nasm)" # TODO: "undefined" becomes "not defined" in newer NASM version
+      - point: [8, 4]
+        level: error
+        message: "symbol `raxx' undefined (nasm)" # TODO: "undefined" becomes "not defined" in newer NASM version
