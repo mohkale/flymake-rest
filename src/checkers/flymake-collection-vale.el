@@ -32,12 +32,12 @@
 (eval-when-compile
   (require 'flymake-collection-define))
 
-(defun flymake-collection-vale-default-extension-function ()
+(defun flymake-collection-vale-default-extension-function (buffer)
   "Default function for `flymake-collection-vale-extension-function'.
-This function will return the actual extension of the file.  If there is
-no extension, nil will be returned, causing the omission of the
-\"--ext\" flag passed to vale."
-  (let* ((file-name (buffer-file-name flymake-collection-source))
+This function will return the actual extension of the file associated
+with BUFFER.  If there is no extension, nil will be returned, causing
+the omission of the \"--ext\" flag passed to vale."
+  (let* ((file-name (buffer-file-name buffer))
          (extension (and file-name (file-name-extension file-name))))
     (when extension
       extension)))
@@ -45,10 +45,10 @@ no extension, nil will be returned, causing the omission of the
 (defcustom flymake-collection-vale-extension-function
   'flymake-collection-vale-default-extension-function
   "Function that returns the value of vale's \"--ext\" flag for the current file.
-This function accepts zero arguments and passes the value of the
-\"--ext\" flag (as a string), which is the extension associated with the
-file to be checked.  The associated extension determines which checking
-rules vale uses according to the user's configuration(s).
+This function accepts one argument, a buffer, and returns the value of
+the \"--ext\" flag (as a string), which is the extension of the file
+associated with that buffer.  The associated extension determines which
+checking rules vale uses according to the user's configuration(s).
 
 If nil is returned, or the value of this option is nil, the \"--ext\"
 flag is omitted.
@@ -73,7 +73,8 @@ See https://vale.sh/."
                (error "Cannot find vale executable"))
   :write-type 'pipe
   :command `(,vale-exec
-             ,@(when-let ((file-extension (funcall flymake-collection-vale-extension-function)))
+             ,@(when-let ((file-extension
+                           (funcall flymake-collection-vale-extension-function flymake-collection-source)))
                  (concat "--ext=." file-extension))
              "--output=JSON")
   :generator
